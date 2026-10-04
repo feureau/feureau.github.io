@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demos — Feureau</title>
+  <meta name="description" content="Small in-browser demos and tools by Feureau: no install, no account, no tracking.">
+  <link rel="canonical" href="https://feureau.github.io/demos/">
+  <meta name="theme-color" content="#0f1115">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Feureau">
+  <meta property="og:title" content="Demos — Feureau">
+  <meta property="og:description" content="Small in-browser demos and tools: no install, no account, no tracking.">
+  <meta property="og:url" content="https://feureau.github.io/demos/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Demos — Feureau">
+  <meta name="twitter:description" content="Small in-browser demos and tools: no install, no account, no tracking.">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="../assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Feureau</span>
+      </a>
+      <input class="nav-cb" type="checkbox" id="nav-toggle" aria-label="Show navigation menu" aria-controls="site-nav">
+      <label class="nav-burger" for="nav-toggle" aria-hidden="true"><span></span><span></span><span></span></label>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../blog/index.html">Blog</a></li>
+          <li><a href="../projects/index.html">Projects</a></li>
+          <li><a href="index.html" aria-current="page">Demos</a></li>
+          <li><a href="../links/index.html">Links</a></li>
+          <li><a href="../about/index.html">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="section">
+      <div class="wrap">
+        <p class="eyebrow">Demos</p>
+        <h1>Things to poke at</h1>
+        <p class="lede">
+          Self-contained pages that run in the browser with no install, no account
+          and no network requests. Everything here is a few hundred lines at most.
+        </p>
+
+        <h2 class="visually-hidden">Available demos</h2>
+
+        <div class="grid mt-lg">
+          <article class="card">
+            <h3><a class="card-link" href="hello-canvas/index.html">Drifting particles</a></h3>
+            <p>
+              A canvas that draws a slow field of drifting dots and links the ones
+              that pass close to each other. Doubles as the template for adding a
+              demo of your own.
+            </p>
+            <ul class="tag-list">
+              <li class="tag">Canvas</li>
+              <li class="tag">No dependencies</li>
+              <li class="tag">Reduced-motion aware</li>
+            </ul>
+            <div class="card-foot">
+              <a href="hello-canvas/index.html">Open the demo</a>
+            </div>
+          </article>
+
+          <!-- TODO: add a card per demo. Copy the folder demos/hello-canvas/
+               to demos/your-demo/ and edit it. -->
+          <article class="card">
+            <h3><a class="card-link" href="hello-canvas/index.html">[Your next demo]</a></h3>
+            <p>
+              Copy <code>demos/hello-canvas/</code> to <code>demos/your-demo/</code>,
+              replace the script, then add a card here and a URL to
+              <code>sitemap.xml</code>.
+            </p>
+            <ul class="tag-list">
+              <li class="tag">[Tag]</li>
+              <li class="tag">[Tag]</li>
+            </ul>
+            <div class="card-foot">
+              <a href="hello-canvas/index.html">See the template</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" aria-labelledby="demo-rules">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="demo-rules">House rules for demos</h2>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3>No dependencies</h3>
+            <p>Plain HTML, CSS and JavaScript only, so a demo keeps working without maintenance.</p>
+          </article>
+          <article class="card">
+            <h3>No network calls</h3>
+            <p>Nothing loads from a third-party host, which keeps the page fast and private.</p>
+          </article>
+          <article class="card">
+            <h3>Keyboard and motion</h3>
+            <p>Anything interactive is reachable by keyboard, and animation respects reduced-motion settings.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>&copy; <span data-year>2026</span> Feureau. Built with hand-written HTML, CSS and no build step.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/feureau">GitHub</a></li>
+        <li><a href="../about/index.html">About</a></li>
+        <li><a href="../blog/index.html">Blog</a></li>
+        <li><a href="../sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

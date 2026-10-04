@@ -1,7 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feureau — projects, writing and experiments</title>
+  <meta name="description" content="Personal website of Feureau: selected projects, writing, in-browser demos and ways to get in touch.">
+  <link rel="canonical" href="https://feureau.github.io/">
+  <meta name="theme-color" content="#0f1115">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Feureau">
+  <meta property="og:title" content="Feureau — projects, writing and experiments">
+  <meta property="og:description" content="Selected projects, writing, in-browser demos and ways to get in touch.">
+  <meta property="og:url" content="https://feureau.github.io/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Feureau — projects, writing and experiments">
+  <meta name="twitter:description" content="Selected projects, writing, in-browser demos and ways to get in touch.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/site.js" defer></script>
+  <!-- TODO: update this structured-data block with your name, job title and profile URLs. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Feureau",
+    "url": "https://feureau.github.io/",
+    "jobTitle": "Wizard",
+    "sameAs": ["https://github.com/feureau", "https://bsky.app/profile/feureau.bsky.social"]
+  }
+  </script>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Feureau</span>
+      </a>
+      <input class="nav-cb" type="checkbox" id="nav-toggle" aria-label="Show navigation menu" aria-controls="site-nav">
+      <label class="nav-burger" for="nav-toggle" aria-hidden="true"><span></span><span></span><span></span></label>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="index.html" aria-current="page">Home</a></li>
+          <li><a href="blog/index.html">Blog</a></li>
+          <li><a href="projects/index.html">Projects</a></li>
+          <li><a href="demos/index.html">Demos</a></li>
+          <li><a href="links/index.html">Links</a></li>
+          <li><a href="about/index.html">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="hero">
+      <div class="wrap">
+        <p class="eyebrow">Wizard</p>
+        <h1 class="hero-title">Hi, I&rsquo;m Feureau.</h1>
+        <!-- TODO: replace this tagline and the paragraphs below with your own words. -->
+        <p class="hero-sub">
+          [One-line tagline about what you do.] This paragraph is a placeholder:
+          write one or two sentences about the kind of work you enjoy, the problems
+          you like solving, and what visitors can find on this site.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="projects/index.html">View projects</a>
+          <a class="btn" href="about/index.html">About me</a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" aria-labelledby="what-i-do">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="what-i-do">What I do</h2>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3>Building software</h3>
+            <p>
+              I design and ship focused tools end to end &mdash; from the first
+              sketch to something people actually use.
+            </p>
+            <p class="muted">Replace with the work you do: languages, platforms, domains.</p>
+          </article>
+          <article class="card">
+            <h3>Writing it down</h3>
+            <p>
+              Notes on what worked, what did not, and the parts of the process
+              that are hard to find written up anywhere else.
+            </p>
+            <p class="muted">Link your posts here once you publish them.</p>
+          </article>
+          <article class="card">
+            <h3>Experiments &amp; demos</h3>
+            <p>
+              Small self-contained toys and tools that run in the browser with no
+              install, no account and no tracking.
+            </p>
+            <p class="muted">See the <a href="demos/index.html">demos page</a>.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="featured-projects">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="featured-projects">Featured projects</h2>
+          <p class="muted"><a href="projects/index.html">All projects &rarr;</a></p>
+        </div>
+        <div class="grid">
+          <!-- TODO: add one card per featured project (three at most). -->
+          <article class="card">
+            <h3><a class="card-link" href="https://feureau.github.io/feureau-math-lab/">Feureau&rsquo;s Math Lab</a></h3>
+            <p>
+              An interactive lab of math and science problems, each with a
+              step-by-step explanation and a hands-on visual widget that makes the
+              reasoning click.
+            </p>
+            <ul class="tag-list">
+              <li class="tag">HTML/JS</li>
+              <li class="tag">Web</li>
+            </ul>
+            <div class="card-foot">
+              <a href="https://feureau.github.io/feureau-math-lab/">Live demo</a>
+              <a href="https://github.com/feureau/feureau-math-lab">Source</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" aria-labelledby="latest-writing">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="latest-writing">Latest writing</h2>
+          <p class="muted"><a href="blog/index.html">All posts &rarr;</a></p>
+        </div>
+        <ul class="post-list">
+          <li class="post-item">
+            <h3><a href="blog/hello-world/index.html">Starting this site from a blank page</a></h3>
+            <p>Why I rebuilt this site as hand-written HTML instead of reaching for a framework.</p>
+            <p class="post-meta"><time datetime="2026-09-18">18 September 2026</time> &middot; <span>3 min read</span></p>
+          </li>
+          <li class="post-item">
+            <h3><a href="blog/static-sites/index.html">Static sites that are not boring</a></h3>
+            <p>Small techniques that make a no-build website feel considered rather than flat.</p>
+            <p class="post-meta"><time datetime="2026-08-05">5 August 2026</time> &middot; <span>4 min read</span></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="contact">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="contact">Get in touch</h2>
+        </div>
+        <p class="lede">
+          I am happy to talk about interesting problems, collaborations or
+          corrections.
+        </p>
+        <!-- TODO: replace the placeholder social URLs with your own. -->
+        <ul class="contact-list">
+          <li><span class="label">GitHub</span> <a href="https://github.com/feureau">github.com/feureau</a></li>
+          <li><span class="label">BlueSky</span> <a href="https://bsky.app/profile/feureau.bsky.social">@feureau.bsky.social</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>&copy; <span data-year>2026</span> Feureau. Built with hand-written HTML, CSS and no build step.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/feureau">GitHub</a></li>
+        <li><a href="about/index.html">About</a></li>
+        <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </footer>
 </body>
 </html>

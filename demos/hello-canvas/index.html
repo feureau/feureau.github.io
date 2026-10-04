@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drifting particles — a canvas demo by Feureau</title>
+  <meta name="description" content="A dependency-free canvas demo: drifting dots linked by lines when they pass close. Also the template for adding demos to this site.">
+  <link rel="canonical" href="https://feureau.github.io/demos/hello-canvas/">
+  <meta name="theme-color" content="#0f1115">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Feureau">
+  <meta property="og:title" content="Drifting particles — a canvas demo">
+  <meta property="og:description" content="A dependency-free canvas demo: drifting dots linked by lines when they pass close.">
+  <meta property="og:url" content="https://feureau.github.io/demos/hello-canvas/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Drifting particles — a canvas demo">
+  <meta name="twitter:description" content="A dependency-free canvas demo: drifting dots linked by lines when they pass close.">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script src="../../assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../../index.html">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Feureau</span>
+      </a>
+      <input class="nav-cb" type="checkbox" id="nav-toggle" aria-label="Show navigation menu" aria-controls="site-nav">
+      <label class="nav-burger" for="nav-toggle" aria-hidden="true"><span></span><span></span><span></span></label>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../blog/index.html">Blog</a></li>
+          <li><a href="../../projects/index.html">Projects</a></li>
+          <li><a href="../index.html" aria-current="page">Demos</a></li>
+          <li><a href="../../links/index.html">Links</a></li>
+          <li><a href="../../about/index.html">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="section">
+      <div class="wrap">
+        <a class="back-link" href="../index.html">All demos</a>
+        <p class="eyebrow">Demo</p>
+        <h1>Drifting particles</h1>
+        <p class="lede">
+          Dots drift across a canvas and are linked by a line whenever two of them
+          pass close to each other. One file, no dependencies, about forty lines of
+          logic.
+        </p>
+
+        <div class="demo-stage mt-lg">
+          <canvas id="particle-field" width="960" height="540" role="img" aria-label="An animated field of drifting dots, with lines drawn between dots that pass near each other"></canvas>
+          <noscript>
+            <p class="demo-note">This demo needs JavaScript. The rest of the page does not.</p>
+          </noscript>
+        </div>
+        <p class="demo-note">
+          If your system asks for reduced motion, the canvas is drawn once and left
+          still. The animation also pauses while this tab is in the background.
+        </p>
+
+        <div class="prose mt-xl">
+          <h2>How it works</h2>
+          <p>
+            Each dot keeps a position and a small velocity. Every frame moves the
+            dots, wraps them around the edges, then compares every pair: if two dots
+            are closer than the link distance, a line is drawn with an opacity that
+            fades as the distance grows.
+          </p>
+          <pre><code>var dx = a.x - b.x;
+var dy = a.y - b.y;
+var d = Math.sqrt(dx * dx + dy * dy);
+
+if (d &lt; link) {
+  ctx.globalAlpha = 1 - d / link;
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y);
+  ctx.lineTo(b.x, b.y);
+  ctx.stroke();
+}</code></pre>
+          <p>
+            Colours come from the same custom properties as the rest of the site,
+            so the demo is coloured from the site's tokens rather than from
+            hard-coded values of its own.
+          </p>
+
+          <h2>Using this as a template</h2>
+          <ol>
+            <li>Copy <code>demos/hello-canvas/</code> to <code>demos/your-demo/</code>.</li>
+            <li>Edit the title, description and canonical URL in the <code>&lt;head&gt;</code>.</li>
+            <li>Replace the script, keeping the resize and visibility handling.</li>
+            <li>Add a card to <code>demos/index.html</code> and a URL to <code>sitemap.xml</code>.</li>
+          </ol>
+
+          <h2>Why the canvas is described</h2>
+          <p>
+            A canvas is invisible to assistive technology, so it carries a
+            <code>role="img"</code> and a label that says what it shows. Purely
+            decorative motion should instead be hidden with
+            <code>aria-hidden="true"</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>&copy; <span data-year>2026</span> Feureau. Built with hand-written HTML, CSS and no build step.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/feureau">GitHub</a></li>
+        <li><a href="../../about/index.html">About</a></li>
+        <li><a href="../../blog/index.html">Blog</a></li>
+        <li><a href="../../sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    /* Drifting particles — dependency-free canvas demo.
+       Reads the site palette so it matches the site colours. */
+    (function () {
+      "use strict";
+
+      var canvas = document.getElementById("particle-field");
+      if (!canvas || !canvas.getContext) {
+        return;
+      }
+
+      var ctx = canvas.getContext("2d");
+      var dotColour = "#7aa2ff";
+      var lineColour = "#a5adbe";
+
+      var readPalette = function () {
+        var styles = getComputedStyle(document.documentElement);
+        dotColour = (styles.getPropertyValue("--accent") || dotColour).trim();
+        lineColour = (styles.getPropertyValue("--text-muted") || lineColour).trim();
+      };
+
+      readPalette();
+
+      var prefersStill =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      var COUNT = 46;
+      var LINK = 130;
+      var dots = [];
+      var width = 0;
+      var height = 0;
+      var frameHandle = null;
+      var running = false;
+
+      var random = function (min, max) {
+        return min + Math.random() * (max - min);
+      };
+
+      var seed = function () {
+        dots = [];
+        for (var i = 0; i < COUNT; i += 1) {
+          dots.push({
+            x: random(0, width),
+            y: random(0, height),
+            vx: random(-0.22, 0.22),
+            vy: random(-0.22, 0.22),
+            r: random(1.1, 2.4)
+          });
+        }
+      };
+
+      var resize = function () {
+        var available =
+          canvas.clientWidth ||
+          (canvas.parentNode ? canvas.parentNode.clientWidth - 32 : 640);
+        var cssWidth = Math.max(280, Math.round(available));
+        var cssHeight = Math.round(cssWidth * 0.5625);
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        width = cssWidth;
+        height = cssHeight;
+        canvas.width = Math.round(cssWidth * dpr);
+        canvas.height = Math.round(cssHeight * dpr);
+        canvas.style.height = cssHeight + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        seed();
+        draw();
+      };
+
+      var draw = function () {
+        ctx.clearRect(0, 0, width, height);
+
+        /* Links first, so the dots sit on top of them. */
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = lineColour;
+
+        for (var i = 0; i < dots.length; i += 1) {
+          for (var j = i + 1; j < dots.length; j += 1) {
+            var a = dots[i];
+            var b = dots[j];
+            var dx = a.x - b.x;
+            var dy = a.y - b.y;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < LINK) {
+              ctx.globalAlpha = (1 - distance / LINK) * 0.55;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = dotColour;
+
+        for (var k = 0; k < dots.length; k += 1) {
+          ctx.beginPath();
+          ctx.arc(dots[k].x, dots[k].y, dots[k].r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      };
+
+      var step = function () {
+        for (var i = 0; i < dots.length; i += 1) {
+          var dot = dots[i];
+          dot.x += dot.vx;
+          dot.y += dot.vy;
+
+          if (dot.x < -2) { dot.x = width + 2; }
+          if (dot.x > width + 2) { dot.x = -2; }
+          if (dot.y < -2) { dot.y = height + 2; }
+          if (dot.y > height + 2) { dot.y = -2; }
+        }
+      };
+
+      var loop = function () {
+        step();
+        draw();
+        frameHandle = window.requestAnimationFrame(loop);
+      };
+
+      var start = function () {
+        if (running || prefersStill) {
+          return;
+        }
+        running = true;
+        frameHandle = window.requestAnimationFrame(loop);
+      };
+
+      var stop = function () {
+        running = false;
+        if (frameHandle !== null) {
+          window.cancelAnimationFrame(frameHandle);
+          frameHandle = null;
+        }
+      };
+
+      var resizeTimer = null;
+      window.addEventListener("resize", function () {
+        if (resizeTimer) {
+          window.clearTimeout(resizeTimer);
+        }
+        resizeTimer = window.setTimeout(resize, 150);
+      });
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          stop();
+        } else {
+          start();
+        }
+      });
+
+      resize();
+      start();
+    })();
+  </script>
+</body>
+</html>

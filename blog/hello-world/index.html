@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Starting this site from a blank page — Feureau</title>
+  <meta name="description" content="Why this site is hand-written HTML instead of a framework, and what a no-build workflow actually buys.">
+  <link rel="canonical" href="https://feureau.github.io/blog/hello-world/">
+  <meta name="theme-color" content="#0f1115">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Feureau">
+  <meta property="og:title" content="Starting this site from a blank page">
+  <meta property="og:description" content="Why this site is hand-written HTML instead of a framework, and what a no-build workflow actually buys.">
+  <meta property="og:url" content="https://feureau.github.io/blog/hello-world/">
+  <meta property="article:published_time" content="2026-09-18">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Starting this site from a blank page">
+  <meta name="twitter:description" content="Why this site is hand-written HTML instead of a framework, and what a no-build workflow actually buys.">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script src="../../assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../../index.html">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Feureau</span>
+      </a>
+      <input class="nav-cb" type="checkbox" id="nav-toggle" aria-label="Show navigation menu" aria-controls="site-nav">
+      <label class="nav-burger" for="nav-toggle" aria-hidden="true"><span></span><span></span><span></span></label>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../index.html" aria-current="page">Blog</a></li>
+          <li><a href="../../projects/index.html">Projects</a></li>
+          <li><a href="../../demos/index.html">Demos</a></li>
+          <li><a href="../../links/index.html">Links</a></li>
+          <li><a href="../../about/index.html">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <article class="section">
+      <div class="wrap">
+        <div class="prose-wrap">
+          <a class="back-link" href="../index.html">All posts</a>
+
+          <header class="article-head">
+            <h1>Starting this site from a blank page</h1>
+            <p class="post-meta">
+              <time datetime="2026-09-18">18 September 2026</time>
+              <span aria-hidden="true">&middot;</span>
+              <span>3 min read</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>meta, web</span>
+            </p>
+          </header>
+
+          <div class="prose">
+            <!-- TODO: this is sample content. Replace it with your own first post,
+                 or delete this file and its card on the blog index. -->
+            <p>
+              This site is a folder of HTML files. There is no generator, no
+              package manager and no workflow file &mdash; just markup, one
+              stylesheet and one small script. That was a deliberate choice, and it
+              is worth writing down before nostalgia rewrites the reasoning.
+            </p>
+
+            <h2>What &ldquo;no build step&rdquo; actually buys</h2>
+            <p>
+              The obvious win is that nothing stands between editing a file and
+              seeing the result. There is no dependency tree to update, so there is
+              no dependency tree to break. A file pushed to the repository is the
+              file served to a browser, byte for byte.
+            </p>
+            <p>
+              The less obvious win is that the site keeps working. A static page
+              written today will still render in ten years, which is not something
+              that can be said for every tool that generates static pages.
+            </p>
+
+            <blockquote>
+              <p>
+                If the output of a build is a website, keeping the website and
+                deleting the build is a legitimate design decision.
+              </p>
+            </blockquote>
+
+            <h2>What gets harder</h2>
+            <p>
+              Shared markup is the real cost. There is no layout system to inherit,
+              so the header and footer are copied into every page. That is fine at
+              this size and painful at a hundred pages.
+            </p>
+            <ul>
+              <li>Adding a post means editing two files: the post and the index.</li>
+              <li>Renaming a section means a search and replace across pages.</li>
+              <li>Nothing validates the markup except careful reading.</li>
+            </ul>
+
+            <h3>The rules that keep it manageable</h3>
+            <ol>
+              <li>Use relative paths for every internal link and asset.</li>
+              <li>Keep the stylesheet token-driven, so re-theming is one block.</li>
+              <li>Treat JavaScript as optional; nothing important may depend on it.</li>
+              <li>Duplicate the navigation rather than rendering it from a script.</li>
+            </ol>
+
+            <h2>A link that works everywhere</h2>
+            <p>
+              The fourth rule matters more than it sounds. A navigation bar injected
+              by a script looks tidy in the repository and then disappears when a
+              page is opened from disk, because fetching a partial from
+              <code>file://</code> is blocked. Writing the links out avoids the
+              problem entirely.
+            </p>
+            <pre><code>&lt;nav class="site-nav" aria-label="Main"&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="../index.html"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="index.html" aria-current="page"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+            <p>
+              The <code>aria-current</code> attribute does double duty: it tells a
+              screen reader which page is open, and it is a reliable CSS hook for
+              styling the active link.
+            </p>
+
+            <h2>The trade-offs, side by side</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Concern</th>
+                  <th scope="col">Hand-written</th>
+                  <th scope="col">Generated</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Time to first page</td>
+                  <td>Minutes</td>
+                  <td>An afternoon of setup</td>
+                </tr>
+                <tr>
+                  <td>Adding a post</td>
+                  <td>Copy a file, edit two places</td>
+                  <td>Drop a file in a folder</td>
+                </tr>
+                <tr>
+                  <td>Breaks over time</td>
+                  <td>Rarely</td>
+                  <td>Whenever dependencies move</td>
+                </tr>
+                <tr>
+                  <td>Comfortable ceiling</td>
+                  <td>Tens of pages</td>
+                  <td>Thousands</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h2>Where this leaves the site</h2>
+            <p>
+              A site this size does not need machinery. When it grows past the
+              comfortable ceiling, the markup is plain enough to move into any
+              generator without a rewrite &mdash; which is exactly the escape hatch
+              worth keeping open.
+            </p>
+          </div>
+
+          <nav class="post-nav" aria-label="More posts">
+            <a href="../static-sites/index.html">Older: Static sites that are not boring &rarr;</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>&copy; <span data-year>2026</span> Feureau. Built with hand-written HTML, CSS and no build step.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/feureau">GitHub</a></li>
+        <li><a href="../../about/index.html">About</a></li>
+        <li><a href="../index.html">Blog</a></li>
+        <li><a href="../../sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

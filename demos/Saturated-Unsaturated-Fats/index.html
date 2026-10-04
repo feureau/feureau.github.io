@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Saturated vs Unsaturated Fats — Interactive</title>
+<style>
+  :root{
+    --bg:#0b1118;
+    --panel:#111c26;
+    --panel2:#16232f;
+    --line:#24323f;
+    --text:#e6edf3;
+    --muted:#8fa3b4;
+    --accent:#4fc3f7;
+    --warm:#ffb74d;
+    --good:#66bb6a;
+    --bad:#ef5350;
+    --purple:#b39ddb;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 50% -15%, #1b2c3b 0%, #0b1118 65%);
+    color:var(--text);
+    min-height:100vh;
+    padding:28px 16px 70px;
+    line-height:1.55;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  header h1{
+    font-size:clamp(1.35rem,3.4vw,2rem);
+    margin:0 0 8px;
+    letter-spacing:-.02em;
+    font-weight:700;
+  }
+  header h1 span{color:var(--accent)}
+  header .sub{
+    margin:0 0 26px;
+    color:var(--muted);
+    font-size:.95rem;
+    max-width:62ch;
+  }
+
+  .tabs{
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;
+  }
+  .tab{
+    appearance:none;border:1px solid var(--line);
+    background:var(--panel);color:var(--muted);
+    padding:9px 15px;border-radius:999px;
+    font-size:.86rem;font-weight:600;cursor:pointer;
+    transition:.2s;
+    font-family:inherit;
+  }
+  .tab:hover{color:var(--text);border-color:#3a4c5e}
+  .tab.active{
+    background:linear-gradient(180deg,#1e3a4d,#152836);
+    color:var(--accent);border-color:#2f5f7d;
+    box-shadow:0 0 0 1px rgba(79,195,247,.15), 0 6px 20px -8px rgba(79,195,247,.5);
+  }
+
+  .panel{display:none;animation:fade .35s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ---- stage (clickable + fullscreen-able) ---- */
+  .stage{
+    position: relative;
+    background: linear-gradient(180deg,#101c26,#0d1720);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 24px 50px -30px #000 inset, 0 20px 40px -30px #000;
+    cursor: pointer;
+    transition: border-color .25s ease, box-shadow .25s ease;
+    outline: none;
+  }
+  .stage:hover{
+    border-color: #33475a;
+    box-shadow: 0 24px 50px -30px #000 inset, 0 20px 40px -30px #000,
+                0 0 0 1px rgba(79,195,247,.08);
+  }
+  .stage > svg{display:block;width:100%;height:auto}
+
+  /* fullscreen state — generic (panels 1, 2, 4) */
+  .stage:fullscreen,
+  .stage:-webkit-full-screen{
+    background: radial-gradient(1200px 800px at 50% 40%, #14232f 0%, #070c12 70%);
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* ONLY the direct-child animation SVG should stretch to fill the screen. */
+  .stage:fullscreen > svg,
+  .stage:-webkit-full-screen > svg{
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .stage:fullscreen:hover{ border-color: transparent; }
+
+  /* default fullscreen hint */
+  .stage:fullscreen::after,
+  .stage:-webkit-full-screen::after{
+    content: "Click anywhere to replay  ·  Esc to exit";
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(230,237,243,.35);
+    font-size: .75rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* panel-2 specific fullscreen hint (mentions right-click toggle) */
+  .stage[data-panel="p2"]:fullscreen::after,
+  .stage[data-panel="p2"]:-webkit-full-screen::after{
+    content: "Left click: replay  ·  Right click: toggle single ↔ double bond  ·  Esc: exit";
+  }
+
+  /* =========================================================
+     PANEL 3 — Cis vs trans fullscreen layout
+     ========================================================= */
+  .stage[data-panel="p3"]:fullscreen,
+  .stage[data-panel="p3"]:-webkit-full-screen{
+    display: block;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: radial-gradient(1200px 800px at 50% 40%, #14232f 0%, #070c12 70%);
+    box-shadow: none;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .stage[data-panel="p3"]:fullscreen .two,
+  .stage[data-panel="p3"]:-webkit-full-screen .two{
+    width: 100vw;
+    height: 100vh;
+    gap: 0;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stage[data-panel="p3"]:fullscreen .mini,
+  .stage[data-panel="p3"]:-webkit-full-screen .mini{
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .stage[data-panel="p3"]:fullscreen .mini h3,
+  .stage[data-panel="p3"]:-webkit-full-screen .mini h3{
+    margin: 0;
+    padding: 26px 20px 8px;
+    text-align: center;
+    font-size: 1rem;
+    letter-spacing: .14em;
+  }
+
+  .stage[data-panel="p3"]:fullscreen .mini svg,
+  .stage[data-panel="p3"]:-webkit-full-screen .mini svg{
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: block;
+  }
+
+  /* fullscreen button */
+  .fs-btn{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 5;
+    background: rgba(17,28,38,.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .55;
+    font-family: inherit;
+    line-height: 0;
+  }
+  .fs-btn:hover{
+    opacity: 1;
+    color: var(--accent);
+    border-color: #2f5f7d;
+    background: rgba(28,59,80,.85);
+  }
+
+  /* safety net: the icon inside the button must never stretch */
+  .fs-btn svg{
+    width: 15px !important;
+    height: 15px !important;
+    display: block;
+    flex: none;
+  }
+
+  .fs-btn .ico-collapse{display:none}
+  .stage:fullscreen .fs-btn .ico-expand,
+  .stage:-webkit-full-screen .fs-btn .ico-expand{display:none}
+  .stage:fullscreen .fs-btn .ico-collapse,
+  .stage:-webkit-full-screen .fs-btn .ico-collapse{display:block}
+  .stage:fullscreen .fs-btn,
+  .stage:-webkit-full-screen .fs-btn{ opacity: .35; top: 18px; right: 18px; }
+  .stage:fullscreen .fs-btn:hover,
+  .stage:-webkit-full-screen .fs-btn:hover{ opacity: 1; }
+
+  .caption{
+    margin-top:16px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--accent);
+    border-radius:12px;
+    padding:14px 18px;
+    font-size:.93rem;
+    color:#c6d3de;
+  }
+  .caption b{color:var(--text)}
+  .caption .tag{
+    display:inline-block;
+    font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin-bottom:5px;
+  }
+
+  .controls{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;
+  }
+  .btn{
+    appearance:none;font-family:inherit;
+    border:1px solid #2f5f7d;
+    background:linear-gradient(180deg,#1c3b50,#14293a);
+    color:var(--accent);
+    padding:11px 20px;border-radius:10px;
+    font-size:.9rem;font-weight:700;cursor:pointer;
+    transition:.2s;
+    box-shadow:0 8px 22px -14px rgba(79,195,247,.9);
+  }
+  .btn:hover{background:linear-gradient(180deg,#235070,#173347)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+  .btn.ghost{
+    background:transparent;border-color:var(--line);color:var(--muted);
+    box-shadow:none;
+  }
+  .btn.ghost:hover{color:var(--text);border-color:#3a4c5e}
+
+  .two{
+    display:grid;grid-template-columns:1fr 1fr;gap:18px;
+  }
+  @media(max-width:720px){
+    .two{grid-template-columns:1fr}
+    /* keep the two molecules side by side even on narrow screens in fullscreen */
+    .stage[data-panel="p3"]:fullscreen .two,
+    .stage[data-panel="p3"]:-webkit-full-screen .two{
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .mini{
+    background:linear-gradient(180deg,#101c26,#0d1720);
+    border:1px solid var(--line);
+    border-radius:16px;padding:8px;
+  }
+  .mini svg{display:block;width:100%;height:auto}
+  .mini h3{
+    margin:2px 6px 6px;font-size:.82rem;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:700;
+  }
+  .mini h3.cis{color:var(--warm)}
+  .mini h3.trans{color:var(--good)}
+
+  .legend{
+    display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;
+    font-size:.82rem;color:var(--muted);
+  }
+  .legend i{
+    display:inline-block;width:11px;height:11px;border-radius:50%;
+    margin-right:6px;vertical-align:middle;
+  }
+
+  text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .box{fill:#0e1922;stroke:#22313e;stroke-width:1.5}
+  .box-label{fill:var(--muted);font-size:13px;font-weight:700;letter-spacing:.08em;text-anchor:middle;text-transform:uppercase}
+  .axis{stroke:#4fc3f7;stroke-width:1.6;stroke-dasharray:5 5;opacity:.65}
+  .note{fill:#8fa3b4;font-size:12.5px;font-weight:600}
+  .note-big{fill:#e6edf3;font-size:14px;font-weight:700}
+  .note-accent{fill:#4fc3f7;font-size:12.5px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Saturated, Unsaturated &amp; the <span>Double Bond</span></h1>
+    <p class="sub">An interactive look at why the shape of a fat molecule decides whether it is solid or liquid — and how it treats your LDL cholesterol.</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="p1">1 · Saturated</button>
+    <button class="tab" data-tab="p2">2 · The double bond</button>
+    <button class="tab" data-tab="p3">3 · Cis vs trans</button>
+    <button class="tab" data-tab="p4">4 · Why shape matters</button>
+  </nav>
+
+  <!-- ================= PANEL 1 ================= -->
+  <section class="panel active" id="p1">
+    <div class="stage" data-panel="p1">
+      <svg id="svg1" viewBox="0 0 560 400"></svg>
+      <button class="fs-btn" title="Fullscreen" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path class="ico-expand" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+          <path class="ico-collapse" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="controls">
+      <button class="btn" id="btnReplay1">↺ Replay buildup</button>
+    </div>
+    <div class="caption">
+      <span class="tag">Saturated fat</span><br>
+      Every carbon in the chain is bonded to the <b>maximum number of hydrogen atoms</b> it can hold.
+      There are <b>no double bonds</b> — the chain is "saturated" with hydrogen.
+      Because the chain is straight, these molecules stack neatly, which is why saturated fats like
+      <b>butter, coconut oil and palm oil</b> are solid or semi-solid at room temperature.
+    </div>
+  </section>
+
+  <!-- ================= PANEL 2 ================= -->
+  <section class="panel" id="p2">
+    <div class="stage" data-panel="p2">
+      <svg id="svg2" viewBox="0 0 560 400"></svg>
+      <button class="fs-btn" title="Fullscreen" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path class="ico-expand" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+          <path class="ico-collapse" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="controls">
+      <button class="btn" id="btnRemove">Remove H₂ → form a double bond</button>
+      <button class="btn ghost" id="btnReplay2">↺ Replay from start</button>
+    </div>
+    <div class="caption" id="cap2">
+      <span class="tag">Ready</span><br>
+      This is the same straight, saturated chain. Press the button to remove one hydrogen from each of
+      two neighbouring carbons. The two spare bonds join up into a <b>double bond</b> — and the chain
+      <b>bends</b>.
+    </div>
+  </section>
+
+  <!-- ================= PANEL 3 ================= -->
+  <section class="panel" id="p3">
+    <div class="stage" data-panel="p3">
+      <div class="two">
+        <div class="mini">
+          <h3 class="cis">Cis — kinked</h3>
+          <svg id="svg3a" viewBox="60 105 420 250"></svg>
+        </div>
+        <div class="mini">
+          <h3 class="trans">Trans — straight</h3>
+          <svg id="svg3b" viewBox="60 105 420 250"></svg>
+        </div>
+      </div>
+      <button class="fs-btn" title="Fullscreen" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path class="ico-expand" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+          <path class="ico-collapse" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="controls">
+      <button class="btn" id="btnReplay3">↺ Replay animation</button>
+    </div>
+    <div class="caption">
+      <span class="tag">Cis vs trans</span><br>
+      Both molecules have the same double bond and the same number of hydrogens — the difference is
+      <b>which side of the double bond the two chain halves sit on</b>.
+      In the <b>cis</b> form (left) both halves are on the same side, forcing a <b>~35° kink</b>
+      (dashed blue lines). In the <b>trans</b> form (right) the halves are on opposite sides, so the chain
+      stays <b>straight</b> — which is why trans fats behave in the body almost exactly like saturated fats.
+    </div>
+  </section>
+
+  <!-- ================= PANEL 4 ================= -->
+  <section class="panel" id="p4">
+    <div class="stage" data-panel="p4">
+      <svg id="svg4" viewBox="0 0 620 380">
+        <defs>
+          <g id="tpl-sat"></g>
+          <g id="tpl-cis"></g>
+        </defs>
+        <rect class="box" x="15" y="48" width="280" height="315" rx="14"/>
+        <rect class="box" x="325" y="48" width="280" height="315" rx="14"/>
+        <text class="box-label" x="155" y="34">Saturated / trans</text>
+        <text class="box-label" x="465" y="34">Cis-unsaturated</text>
+        <text class="note" x="155" y="352" text-anchor="middle">packs tightly → SOLID</text>
+        <text class="note" x="465" y="352" text-anchor="middle">can't pack → LIQUID</text>
+        <g id="solid-mols"></g>
+        <g id="liquid-mols"></g>
+      </svg>
+      <button class="fs-btn" title="Fullscreen" aria-label="Toggle fullscreen">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path class="ico-expand" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+          <path class="ico-collapse" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="controls">
+      <button class="btn" id="btnPlay4">⏸ Pause floating</button>
+      <button class="btn ghost" id="btnShuffle4">↺ Replay</button>
+    </div>
+    <div class="caption">
+      <span class="tag">Why shape matters</span><br>
+      Straight chains slide past each other and <b>stack into a dense, ordered solid</b> — that's butter,
+      coconut oil and palm oil. Kinked <i>cis</i> chains get tangled and leave gaps, so they
+      <b>stay liquid</b> — that's olive, canola, peanut and sunflower oil.
+      The same geometry plays out in your body: straight (saturated / trans) fats tend to
+      <b>raise LDL cholesterol</b>, while kinked unsaturated fats <b>lower or don't raise</b> it.
+    </div>
+  </section>
+
+  <div class="legend">
+    <span><i style="background:#263238;border:2px solid #4a5a68"></i>Carbon</span>
+    <span><i style="background:#eceff1;border:2px solid #90a4ae"></i>Hydrogen</span>
+    <span><i style="background:#546e7a"></i>Single bond</span>
+    <span><i style="background:#4fc3f7"></i>Double bond</span>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const NS = "http://www.w3.org/2000/svg";
+
+  /* ---------- tiny helpers ---------- */
+  function svgEl(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  const sub   = (a, b) => ({ x: a.x - b.x, y: a.y - b.y });
+  const len   = v => Math.hypot(v.x, v.y);
+  const norm  = v => { const l = len(v) || 1; return { x: v.x / l, y: v.y / l }; };
+  const dist  = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const lerp  = (a, b, t) => a + (b - a) * t;
+  const lerpPt= (a, b, t) => ({ x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t) });
+  const ease  = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function animate(duration, onUpdate) {
+    return new Promise(resolve => {
+      const start = performance.now();
+      (function frame(now) {
+        const t = Math.min(1, (now - start) / duration);
+        onUpdate(ease(t), t);
+        if (t < 1) requestAnimationFrame(frame);
+        else resolve();
+      })(performance.now());
+    });
+  }
+
+  /* ---------- panel-show + action registries ---------- */
+  const onShow        = {};
+  const replayActions = {};   // left-click on stage
+  const toggleActions = {};   // right-click on stage (fullscreen)
+
+  /* ---------- geometry ---------- */
+  function chainFromAngles(x0, y0, bondLen, angles) {
+    const pts = [{ x: x0, y: y0 }];
+    let x = x0, y = y0;
+    for (const a of angles) {
+      const r = a * Math.PI / 180;
+      x += bondLen * Math.cos(r);
+      y += bondLen * Math.sin(r);
+      pts.push({ x, y });
+    }
+    return pts;
+  }
+
+  function getHydrogens(pts, doubleBond) {
+    const n = pts.length;
+    const HD = 32;
+    const out = [];
+
+    for (let i = 0; i < n; i++) {
+      const terminal = (i === 0 || i === n - 1);
+      const inDouble = (doubleBond !== undefined) && (i === doubleBond || i === doubleBond + 1);
+
+      if (terminal) {
+        const nb = (i === 0) ? pts[1] : pts[n - 2];
+        const away = norm(sub(pts[i], nb));
+        const base = Math.atan2(away.y, away.x);
+        [-1.15, 0, 1.15].forEach(da => {
+          out.push({
+            ci: i,
+            x: pts[i].x + HD * Math.cos(base + da),
+            y: pts[i].y + HD * Math.sin(base + da)
+          });
+        });
+      } else if (inDouble) {
+        const partner  = (i === doubleBond) ? doubleBond + 1 : doubleBond;
+        const chainNb  = (i === doubleBond) ? pts[i - 1] : pts[i + 1];
+        const d = norm(sub(pts[partner], pts[i]));
+        const p = { x: -d.y, y: d.x };
+        const v = sub(chainNb, pts[i]);
+        const s = (v.x * p.x + v.y * p.y) >= 0 ? 1 : -1;
+        out.push({
+          ci: i,
+          x: pts[i].x - s * p.x * HD,
+          y: pts[i].y - s * p.y * HD
+        });
+      } else {
+        const d = norm(sub(pts[i + 1], pts[i - 1]));
+        const p = { x: -d.y, y: d.x };
+        out.push({ ci: i, x: pts[i].x + p.x * HD, y: pts[i].y + p.y * HD });
+        out.push({ ci: i, x: pts[i].x - p.x * HD, y: pts[i].y - p.y * HD });
+      }
+    }
+    return out;
+  }
+
+  /* ---------- molecule constants ---------- */
+  const X0 = 110, Y0 = 190, BL = 60;
+  const ANG_SAT = [-24, 24, -24, 24, -24, 24];
+  const ANG_CIS = [-24, 24, -24, 35, 59, 11];
+  const DB_INDEX = 3;
+
+  const PTS_SAT = chainFromAngles(X0, Y0, BL, ANG_SAT);
+  const PTS_CIS = chainFromAngles(X0, Y0, BL, ANG_CIS);
+
+  /* ---------- generic molecule renderer ---------- */
+  function drawMolecule(parent, pts, doubleBond, opt) {
+    opt = opt || {};
+    const rC     = opt.rC     !== undefined ? opt.rC     : 10;
+    const rH     = opt.rH     !== undefined ? opt.rH     : 7;
+    const wBond  = opt.wBond  !== undefined ? opt.wBond  : 8;
+    const wHBond = opt.wHBond !== undefined ? opt.wHBond : 4;
+    const showH  = opt.showH !== false;
+
+    const gBonds  = svgEl("g"); parent.appendChild(gBonds);
+    const gHBonds = svgEl("g"); parent.appendChild(gHBonds);
+    const gAtoms  = svgEl("g"); parent.appendChild(gAtoms);
+    const gHAtoms = svgEl("g"); parent.appendChild(gHAtoms);
+
+    const n = pts.length;
+
+    for (let i = 0; i < n - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const d = norm(sub(b, a));
+      const p = { x: -d.y, y: d.x };
+      const isDbl = (i === doubleBond);
+      const offs = isDbl ? [4.5, -4.5] : [0];
+      offs.forEach(o => {
+        gBonds.appendChild(svgEl("line", {
+          x1: a.x + p.x * o, y1: a.y + p.y * o,
+          x2: b.x + p.x * o, y2: b.y + p.y * o,
+          stroke: isDbl ? "#4fc3f7" : (opt.bondColor || "#546e7a"),
+          "stroke-width": wBond,
+          "stroke-linecap": "round"
+        }));
+      });
+    }
+
+    pts.forEach(pt => {
+      gAtoms.appendChild(svgEl("circle", {
+        cx: pt.x, cy: pt.y, r: rC,
+        fill: opt.cColor || "#263238",
+        stroke: opt.cStroke || "#0f1720",
+        "stroke-width": 2
+      }));
+    });
+
+    const hList = showH ? getHydrogens(pts, doubleBond) : [];
+    const pairs = [];
+    hList.forEach(h => {
+      const c = pts[h.ci];
+      const bond = svgEl("line", {
+        x1: c.x, y1: c.y, x2: h.x, y2: h.y,
+        stroke: opt.hBondColor || "#b0bec5",
+        "stroke-width": wHBond,
+        "stroke-linecap": "round"
+      });
+      gHBonds.appendChild(bond);
+      const atom = svgEl("circle", {
+        cx: h.x, cy: h.y, r: rH,
+        fill: opt.hColor || "#eceff1",
+        stroke: opt.hStroke || "#90a4ae",
+        "stroke-width": 2
+      });
+      gHAtoms.appendChild(atom);
+      pairs.push({ bond, atom });
+    });
+
+    return { gBonds, gHBonds, gAtoms, gHAtoms, hPairs: pairs };
+  }
+
+  /* =========================================================
+     PANEL 1
+     ========================================================= */
+  (function panel1() {
+    const svg = document.getElementById("svg1");
+    const btn = document.getElementById("btnReplay1");
+
+    const g = svgEl("g");
+    svg.appendChild(g);
+
+    const refs = drawMolecule(g, PTS_SAT, undefined);
+
+    refs.hPairs.forEach(p => {
+      p.bond.setAttribute("opacity", "0");
+      p.atom.setAttribute("opacity", "0");
+    });
+
+    const label = svgEl("text", {
+      x: 280, y: 330, "text-anchor": "middle", class: "note-big"
+    });
+    label.textContent = "C₆H₁₄  ·  all single bonds  ·  straight chain";
+    svg.appendChild(label);
+
+    const subLabel = svgEl("text", {
+      x: 280, y: 356, "text-anchor": "middle", class: "note-accent"
+    });
+    subLabel.textContent = "each carbon holds the maximum hydrogen → SATURATED";
+    svg.appendChild(subLabel);
+
+    let timers = [];
+    const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+
+    function play() {
+      clearTimers();
+      btn.disabled = true;
+
+      refs.hPairs.forEach(p => {
+        p.bond.style.transition = "none";
+        p.atom.style.transition = "none";
+        p.bond.setAttribute("opacity", "0");
+        p.atom.setAttribute("opacity", "0");
+      });
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          refs.hPairs.forEach((p, i) => {
+            timers.push(setTimeout(() => {
+              p.bond.style.transition = "opacity .35s ease";
+              p.atom.style.transition = "opacity .35s ease";
+              p.bond.setAttribute("opacity", "1");
+              p.atom.setAttribute("opacity", "1");
+            }, i * 55));
+          });
+          timers.push(setTimeout(() => { btn.disabled = false; },
+            120 + refs.hPairs.length * 55));
+        });
+      });
+    }
+
+    btn.addEventListener("click", play);
+    replayActions.p1 = play;
+    onShow.p1 = () => { setTimeout(play, 260); };
+  })();
+
+  /* =========================================================
+     PANEL 2
+     ========================================================= */
+  (function panel2() {
+    const svg = document.getElementById("svg2");
+    const cap = document.getElementById("cap2");
+    const btnRemove = document.getElementById("btnRemove");
+    const btnReplay = document.getElementById("btnReplay2");
+
+    const g = svgEl("g");
+    svg.appendChild(g);
+
+    const gBonds  = svgEl("g"); g.appendChild(gBonds);
+    const gHBonds = svgEl("g"); g.appendChild(gHBonds);
+    const gAtoms  = svgEl("g"); g.appendChild(gAtoms);
+    const gHAtoms = svgEl("g"); g.appendChild(gHAtoms);
+
+    const n = PTS_SAT.length;
+
+    const hA = getHydrogens(PTS_SAT, undefined);
+    const hB = getHydrogens(PTS_CIS, DB_INDEX);
+
+    const used = new Set();
+    const pairs = [];
+    hB.forEach((hb, bi) => {
+      let best = -1, bestD = Infinity;
+      hA.forEach((ha, ai) => {
+        if (used.has(ai) || ha.ci !== hb.ci) return;
+        const d = dist(ha, hb);
+        if (d < bestD) { bestD = d; best = ai; }
+      });
+      if (best !== -1) { used.add(best); pairs.push({ a: best, b: bi }); }
+    });
+    const orphans = hA.map((_, i) => i).filter(i => !used.has(i));
+
+    const bondLines = [];
+    for (let i = 0; i < n - 1; i++) {
+      const isDbl = (i === DB_INDEX);
+      const arr = [];
+      const count = isDbl ? 2 : 1;
+      for (let k = 0; k < count; k++) {
+        const ln = svgEl("line", {
+          stroke: isDbl ? "#4fc3f7" : "#546e7a",
+          "stroke-width": 8,
+          "stroke-linecap": "round"
+        });
+        gBonds.appendChild(ln);
+        arr.push(ln);
+      }
+      bondLines.push({ arr, isDbl });
+    }
+
+    const atomEls = PTS_SAT.map(() => {
+      const c = svgEl("circle", {
+        r: 10, fill: "#263238", stroke: "#0f1720", "stroke-width": 2
+      });
+      gAtoms.appendChild(c);
+      return c;
+    });
+
+    const hBondEls = hA.map(() => {
+      const l = svgEl("line", {
+        stroke: "#b0bec5", "stroke-width": 4, "stroke-linecap": "round"
+      });
+      gHBonds.appendChild(l);
+      return l;
+    });
+    const hAtomEls = hA.map(() => {
+      const c = svgEl("circle", {
+        r: 7, fill: "#eceff1", stroke: "#90a4ae", "stroke-width": 2
+      });
+      gHAtoms.appendChild(c);
+      return c;
+    });
+
+    const note = svgEl("text", {
+      x: 280, y: 356, "text-anchor": "middle", class: "note-accent"
+    });
+    svg.appendChild(note);
+
+    let phase = 0;
+    let busy = false;
+
+    function setLine(el, a, b, perp, off) {
+      el.setAttribute("x1", a.x + perp.x * off);
+      el.setAttribute("y1", a.y + perp.y * off);
+      el.setAttribute("x2", b.x + perp.x * off);
+      el.setAttribute("y2", b.y + perp.y * off);
+    }
+
+    function apply(t) {
+      const pts = PTS_SAT.map((p, i) => lerpPt(p, PTS_CIS[i], t));
+
+      for (let i = 0; i < n - 1; i++) {
+        const a = pts[i], b = pts[i + 1];
+        const d = norm(sub(b, a));
+        const p = { x: -d.y, y: d.x };
+        const entry = bondLines[i];
+        if (entry.isDbl) {
+          const spread = 4.5 * t;
+          setLine(entry.arr[0], a, b, p, +spread);
+          setLine(entry.arr[1], a, b, p, -spread);
+        } else {
+          setLine(entry.arr[0], a, b, p, 0);
+        }
+      }
+
+      pts.forEach((pt, i) => {
+        atomEls[i].setAttribute("cx", pt.x);
+        atomEls[i].setAttribute("cy", pt.y);
+      });
+
+      pairs.forEach(pr => {
+        const from = hA[pr.a], to = hB[pr.b];
+        const hp = lerpPt(from, to, t);
+        const cp = pts[to.ci];
+        hAtomEls[pr.a].setAttribute("cx", hp.x);
+        hAtomEls[pr.a].setAttribute("cy", hp.y);
+        hAtomEls[pr.a].setAttribute("opacity", "1");
+        hBondEls[pr.a].setAttribute("x1", cp.x);
+        hBondEls[pr.a].setAttribute("y1", cp.y);
+        hBondEls[pr.a].setAttribute("x2", hp.x);
+        hBondEls[pr.a].setAttribute("y2", hp.y);
+        hBondEls[pr.a].setAttribute("opacity", "1");
+      });
+
+      orphans.forEach(ai => {
+        const from = hA[ai];
+        const dir = norm(sub(from, PTS_SAT[from.ci]));
+        const to = { x: from.x + dir.x * 85, y: from.y + dir.y * 85 };
+        const hp = lerpPt(from, to, t);
+        const cp = pts[from.ci];
+        hAtomEls[ai].setAttribute("cx", hp.x);
+        hAtomEls[ai].setAttribute("cy", hp.y);
+        hBondEls[ai].setAttribute("x1", cp.x);
+        hBondEls[ai].setAttribute("y1", cp.y);
+        hBondEls[ai].setAttribute("x2", hp.x);
+        hBondEls[ai].setAttribute("y2", hp.y);
+        const op = Math.max(0, 1 - t * 1.9);
+        hAtomEls[ai].setAttribute("opacity", op);
+        hBondEls[ai].setAttribute("opacity", op);
+      });
+
+      note.textContent = t < 0.5
+        ? "straight chain · all single bonds"
+        : "kinked chain · one C=C double bond";
+      note.setAttribute("opacity", t < 0.08 ? 0 : 1);
+    }
+
+    function setButtons() {
+      btnRemove.textContent = phase === 1
+        ? "Add H₂ back → single bond"
+        : "Remove H₂ → form a double bond";
+    }
+
+    function captionFor(p) {
+      return p === 1
+        ? '<span class="tag">Unsaturated</span><br>' +
+          'Two carbons lost a hydrogen each, and their spare bonds joined into a ' +
+          '<b>double bond</b>. That double bond is rigid, so the chain can no longer lie flat — ' +
+          'it <b>bends ~35°</b>. The molecule now has fewer hydrogens than it could hold: it is ' +
+          '<b>unsaturated</b>. This kink is exactly why olive, canola and peanut oil stay liquid ' +
+          'at room temperature.'
+        : '<span class="tag">Saturated</span><br>' +
+          'Hydrogens restored. The double bond has broken back into two single bonds, the chain ' +
+          'has straightened out, and every carbon is once again holding the maximum hydrogen.';
+    }
+
+    function lock(on) {
+      busy = on;
+      btnRemove.disabled = on;
+      btnReplay.disabled = on;
+    }
+
+    apply(0);
+    note.textContent = "";
+    setButtons();
+
+    async function toggle() {
+      if (busy) return;
+      lock(true);
+      const target = phase === 0 ? 1 : 0;
+      await animate(1200, (e) => apply(phase === 0 ? e : 1 - e));
+      phase = target;
+      setButtons();
+      cap.innerHTML = captionFor(phase);
+      lock(false);
+    }
+
+    async function replay() {
+      if (busy) return;
+      lock(true);
+      apply(0);
+      phase = 0;
+      setButtons();
+      cap.innerHTML = '<span class="tag">Playing…</span><br>' +
+        'Removing one hydrogen from each of two neighbouring carbons so their spare bonds ' +
+        'can join into a <b>double bond</b>.';
+      await sleep(320);
+      await animate(1200, (e) => apply(e));
+      phase = 1;
+      setButtons();
+      cap.innerHTML = captionFor(1);
+      lock(false);
+    }
+
+    btnRemove.addEventListener("click", toggle);
+    btnReplay.addEventListener("click", replay);
+    replayActions.p2 = replay;
+    toggleActions.p2 = toggle;      // right-click toggle
+    onShow.p2 = () => { if (!busy) setTimeout(replay, 220); };
+  })();
+
+  /* =========================================================
+     PANEL 3 — Cis vs trans (JS-driven timeline)
+     ========================================================= */
+  (function panel3() {
+    const svgCis   = document.getElementById("svg3a");
+    const svgTrans = document.getElementById("svg3b");
+    const btn      = document.getElementById("btnReplay3");
+
+    let busy    = false;
+    let version = 0;
+
+    function easeOutBack(t) {
+      const c1 = 1.70158, c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    function buildScene(svg, pts, doubleBond, marker) {
+      svg.innerHTML = "";
+      const root = svgEl("g");
+      svg.appendChild(root);
+
+      const gAxis = svgEl("g");
+      root.appendChild(gAxis);
+      const a1 = pts[1], a2 = pts[3], b1 = pts[4], b2 = pts[6];
+      const da = norm(sub(a2, a1));
+      const db = norm(sub(b2, b1));
+      gAxis.appendChild(svgEl("line", {
+        x1: a1.x - da.x * 55, y1: a1.y - da.y * 55,
+        x2: a2.x + da.x * 30, y2: a2.y + da.y * 30,
+        class: "axis"
+      }));
+      gAxis.appendChild(svgEl("line", {
+        x1: b1.x - db.x * 30, y1: b1.y - db.y * 30,
+        x2: b2.x + db.x * 60, y2: b2.y + db.y * 60,
+        class: "axis"
+      }));
+
+      const refs = drawMolecule(root, pts, doubleBond, {
+        rC: 9, rH: 6, wBond: 7, wHBond: 3.5
+      });
+
+      const gMark = svgEl("g");
+      root.appendChild(gMark);
+
+      const ring = svgEl("circle", {
+        cx: marker.x, cy: marker.y, r: 0,
+        fill: "none", stroke: marker.color,
+        "stroke-width": 2, "stroke-dasharray": "4 4",
+        opacity: ".9"
+      });
+      gMark.appendChild(ring);
+
+      const label = svgEl("text", {
+        x: marker.x + marker.lx, y: marker.y + marker.ly,
+        class: "note-accent", fill: marker.color
+      });
+      label.textContent = marker.text;
+      gMark.appendChild(label);
+
+      return Object.assign({ gAxis, gMark, ring, ringR: 24 }, refs);
+    }
+
+    const sceneCis = buildScene(svgCis, PTS_CIS, DB_INDEX, {
+      x: PTS_CIS[3].x, y: PTS_CIS[3].y,
+      lx: 36, ly: -26, color: "#ffb74d", text: "~35° kink"
+    });
+
+    const sceneTrans = buildScene(svgTrans, PTS_SAT, DB_INDEX, {
+      x: (PTS_SAT[3].x + PTS_SAT[4].x) / 2,
+      y: (PTS_SAT[3].y + PTS_SAT[4].y) / 2,
+      lx: 34, ly: 42, color: "#66bb6a", text: "no bend"
+    });
+
+    function resetScene(scene) {
+      [scene.gAxis, scene.gBonds, scene.gAtoms, scene.gMark].forEach(el => {
+        el.style.transition = "none";
+        el.style.opacity = "0";
+      });
+      scene.gHBonds.style.transition = "none";
+      scene.gHBonds.style.opacity = "1";
+      scene.gHAtoms.style.transition = "none";
+      scene.gHAtoms.style.opacity = "1";
+      scene.hPairs.forEach(p => {
+        p.bond.style.transition = "none";
+        p.bond.style.opacity = "0";
+        p.atom.style.transition = "none";
+        p.atom.style.opacity = "0";
+      });
+      scene.ring.setAttribute("r", 0);
+      document.body.getBoundingClientRect();
+    }
+
+    function fadeGroup(el, dur) {
+      return new Promise(res => {
+        el.style.transition = "none";
+        el.style.opacity = "0";
+        el.getBoundingClientRect();
+        el.style.transition = "opacity " + dur + "ms ease";
+        el.style.opacity = "1";
+        setTimeout(res, dur);
+      });
+    }
+
+    function popRing(ring, baseR, dur, myVersion) {
+      return new Promise(res => {
+        const start = performance.now();
+        (function frame(now) {
+          if (myVersion !== version) return res();
+          const t = Math.min(1, (now - start) / dur);
+          ring.setAttribute("r", Math.max(0, baseR * easeOutBack(t)));
+          if (t < 1) requestAnimationFrame(frame);
+          else res();
+        })(performance.now());
+      });
+    }
+
+    async function playScene(scene, myVersion, startDelay) {
+      const { gAxis, gBonds, gAtoms, gMark, hPairs, ring } = scene;
+
+      if (startDelay) await sleep(startDelay);
+      if (myVersion !== version) return;
+
+      await fadeGroup(gAxis, 280);
+      if (myVersion !== version) return;
+
+      await fadeGroup(gBonds, 380);
+      if (myVersion !== version) return;
+
+      await fadeGroup(gAtoms, 220);
+      if (myVersion !== version) return;
+
+      hPairs.forEach((p, i) => {
+        setTimeout(() => {
+          if (myVersion !== version) return;
+          p.bond.style.transition = "opacity 220ms ease";
+          p.atom.style.transition = "opacity 220ms ease";
+          p.bond.style.opacity = "1";
+          p.atom.style.opacity = "1";
+        }, i * 42);
+      });
+      await sleep(hPairs.length * 42 + 240);
+      if (myVersion !== version) return;
+
+      gMark.style.transition = "opacity 260ms ease";
+      gMark.style.opacity = "1";
+      await popRing(ring, scene.ringR, 480, myVersion);
+    }
+
+    async function replay() {
+      if (busy) return;
+      busy = true;
+      btn.disabled = true;
+      version++;
+      const v = version;
+
+      resetScene(sceneCis);
+      resetScene(sceneTrans);
+
+      await Promise.all([
+        playScene(sceneCis,   v, 0),
+        playScene(sceneTrans, v, 180)
+      ]);
+
+      if (v === version) {
+        busy = false;
+        btn.disabled = false;
+      }
+    }
+
+    btn.addEventListener("click", replay);
+    replayActions.p3 = replay;
+    onShow.p3 = () => setTimeout(replay, 200);
+
+    [sceneCis, sceneTrans].forEach(s => {
+      [s.gAxis, s.gBonds, s.gAtoms, s.gMark].forEach(el => {
+        el.style.transition = "none";
+        el.style.opacity = "1";
+      });
+      s.ring.setAttribute("r", s.ringR);
+    });
+  })();
+
+  /* =========================================================
+     PANEL 4
+     ========================================================= */
+  (function panel4() {
+    const tplSat = document.getElementById("tpl-sat");
+    const tplCis = document.getElementById("tpl-cis");
+    const btnPlay = document.getElementById("btnPlay4");
+    const btnShuffle = document.getElementById("btnShuffle4");
+
+    function buildTemplate(target, pts, doubleBond) {
+      const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+      const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = { x: pts[i].x - cx, y: pts[i].y - cy };
+        const b = { x: pts[i + 1].x - cx, y: pts[i + 1].y - cy };
+        const d = norm(sub(b, a));
+        const p = { x: -d.y, y: d.x };
+        const isDbl = (i === doubleBond);
+        const offs = isDbl ? [5, -5] : [0];
+
+        offs.forEach(o => {
+          target.appendChild(svgEl("line", {
+            x1: a.x + p.x * o, y1: a.y + p.y * o,
+            x2: b.x + p.x * o, y2: b.y + p.y * o,
+            stroke: isDbl ? "#4fc3f7" : "#7f9aad",
+            "stroke-width": 7,
+            "stroke-linecap": "round"
+          }));
+        });
+      }
+      pts.forEach(pt => {
+        target.appendChild(svgEl("circle", {
+          cx: pt.x - cx, cy: pt.y - cy, r: 4.5, fill: "#cfd8dc"
+        }));
+      });
+    }
+
+    buildTemplate(tplSat, PTS_SAT, DB_INDEX);
+    buildTemplate(tplCis, PTS_CIS, DB_INDEX);
+
+    const gSolid  = document.getElementById("solid-mols");
+    const gLiquid = document.getElementById("liquid-mols");
+
+    const SCALE = 0.46;
+
+    const solidYs = [-108, -54, 0, 54, 108];
+    solidYs.forEach(y => {
+      const use = svgEl("use", {
+        href: "#tpl-sat",
+        transform: `translate(155, ${198 + y}) rotate(0) scale(${SCALE})`
+      });
+      use.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#tpl-sat");
+      gSolid.appendChild(use);
+    });
+
+    const liquidItems = [];
+    const liquidDefs = [
+      { x: 400, y: 100, r: -32, ph: 0.0 },
+      { x: 480, y: 155, r:  18, ph: 1.7 },
+      { x: 395, y: 205, r:  55, ph: 3.1 },
+      { x: 490, y: 255, r: -12, ph: 4.4 },
+      { x: 420, y: 300, r:  38, ph: 5.6 }
+    ];
+
+    liquidDefs.forEach(d => {
+      const use = svgEl("use", { href: "#tpl-cis" });
+      use.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#tpl-cis");
+      gLiquid.appendChild(use);
+      liquidItems.push({ el: use, bx: d.x, by: d.y, br: d.r, ph: d.ph });
+    });
+
+    let rafId = null;
+    let running = false;
+    let userPaused = false;
+    let clock = 0;
+
+    function place(it, t) {
+      const dx = Math.sin(t * 0.9 + it.ph) * 7;
+      const dy = Math.cos(t * 1.15 + it.ph * 1.4) * 7;
+      const dr = Math.sin(t * 0.75 + it.ph * 0.9) * 7;
+      it.el.setAttribute(
+        "transform",
+        `translate(${it.bx + dx}, ${it.by + dy}) rotate(${it.br + dr}) scale(${SCALE})`
+      );
+    }
+
+    function tick(now) {
+      clock = now / 1000;
+      liquidItems.forEach(it => place(it, clock));
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function start() {
+      if (running || userPaused) return;
+      running = true;
+      rafId = requestAnimationFrame(tick);
+      syncButton();
+    }
+    function stop() {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(rafId);
+      syncButton();
+    }
+
+    function syncButton() {
+      btnPlay.textContent = (running && !userPaused)
+        ? "⏸ Pause floating"
+        : "▶ Play floating";
+    }
+
+    const obs = new MutationObserver(() => {
+      const panel = document.getElementById("p4");
+      if (panel.classList.contains("active")) start(); else stop();
+    });
+    obs.observe(document.getElementById("p4"), { attributes: true, attributeFilter: ["class"] });
+
+    liquidItems.forEach(it => place(it, 0));
+
+    btnPlay.addEventListener("click", () => {
+      userPaused = !userPaused;
+      if (userPaused) stop(); else start();
+      syncButton();
+    });
+
+    function shuffle() {
+      liquidItems.forEach(it => {
+        it.br = (Math.random() * 120) - 60;
+        it.ph = Math.random() * Math.PI * 2;
+        it.bx = 380 + Math.random() * 120;
+        it.by = 90 + Math.random() * 220;
+      });
+      clock = 0;
+      liquidItems.forEach(it => place(it, 0));
+      userPaused = false;
+      start();
+      syncButton();
+    }
+
+    btnShuffle.addEventListener("click", shuffle);
+    replayActions.p4 = shuffle;
+    syncButton();
+    onShow.p4 = () => { start(); };
+  })();
+
+  /* =========================================================
+     TABS
+     ========================================================= */
+  (function tabs() {
+    const buttons = document.querySelectorAll(".tab");
+    const panels  = document.querySelectorAll(".panel");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        panels.forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        const id = btn.dataset.tab;
+        document.getElementById(id).classList.add("active");
+        if (onShow[id]) onShow[id]();
+      });
+    });
+  })();
+
+  /* =========================================================
+     STAGE: click-to-replay + right-click-toggle + fullscreen
+     ========================================================= */
+  (function stages() {
+    document.querySelectorAll(".stage").forEach(stage => {
+      const id = stage.dataset.panel;
+
+      // --- left click anywhere on the stage to replay ---
+      stage.addEventListener("click", (e) => {
+        if (e.target.closest(".fs-btn")) return;
+        if (replayActions[id]) replayActions[id]();
+      });
+
+      // --- right click on the stage to toggle (only when fullscreen) ---
+      stage.addEventListener("contextmenu", (e) => {
+        if (e.target.closest(".fs-btn")) return;
+        if (!toggleActions[id]) return;
+        const isFs = document.fullscreenElement === stage ||
+                     document.webkitFullscreenElement === stage;
+        if (!isFs) return;
+        e.preventDefault();
+        toggleActions[id]();
+      });
+
+      // --- fullscreen toggle ---
+      const fsBtn = stage.querySelector(".fs-btn");
+      if (!fsBtn) return;
+
+      fsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isFs = document.fullscreenElement === stage ||
+                     document.webkitFullscreenElement === stage;
+        if (isFs) {
+          (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        } else {
+          const req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+          if (req) {
+            const p = req.call(stage);
+            if (p && p.catch) p.catch(() => {});
+          }
+        }
+      });
+    });
+  })();
+
+  /* ---------- kick off the first panel on load ---------- */
+  if (onShow.p1) setTimeout(onShow.p1, 400);
+
+})();
+</script>
+</body>
+</html>

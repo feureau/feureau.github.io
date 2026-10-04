@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found — Feureau</title>
+  <meta name="description" content="That page does not exist on this site. Here are the main sections instead.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f1115">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<!-- This is the only page with root-absolute links, and deliberately so:
+     GitHub Pages serves this file for a missing path while the browser keeps
+     the requested URL, so a relative link here would resolve against the
+     missing folder instead of the site root. This page therefore has no
+     file:// preview, which the other pages do. -->
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Feureau</span>
+      </a>
+      <input class="nav-cb" type="checkbox" id="nav-toggle" aria-label="Show navigation menu" aria-controls="site-nav">
+      <label class="nav-burger" for="nav-toggle" aria-hidden="true"><span></span><span></span><span></span></label>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/demos/">Demos</a></li>
+          <li><a href="/links/">Links</a></li>
+          <li><a href="/about/">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="not-found">
+      <div class="wrap prose-wrap">
+        <p class="code">404</p>
+        <h1>This page does not exist</h1>
+        <p class="muted">
+          The link may be old, or the address may have a typo in it. Everything on
+          the site is reachable from the home page.
+        </p>
+        <div class="btn-row btn-row-center center mt-md">
+          <a class="btn btn-primary" href="/">Go home</a>
+          <a class="btn" href="/blog/">Read the blog</a>
+          <a class="btn" href="/projects/">See projects</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>&copy; <span data-year>2026</span> Feureau. Built with hand-written HTML, CSS and no build step.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/feureau">GitHub</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
