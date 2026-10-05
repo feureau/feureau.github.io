@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exploring Traditional Color: The Sanzo Wada Swatch Viewer — Feureau</title>
+  <meta name="description" content="A reflection on the intersection of traditional Japanese color harmony and minimalist web implementation.">
+  <link rel="canonical" href="https://feureau.github.io/blog/sanzo-wada-viewer/">
+  <meta name="theme-color" content="#0f1115">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Feureau">
+  <meta property="og:title" content="Exploring Traditional Color: The Sanzo Wada Swatch Viewer">
+  <meta property="og:description" content="A reflection on the intersection of traditional Japanese color harmony and minimalist web implementation.">
+  <meta property="og:url" content="https://feureau.github.io/blog/sanzo-wada-viewer/">
+  <meta property="article:published_time" content="2026-10-01">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Exploring Traditional Color: The Sanzo Wada Swatch Viewer">
+  <meta name="twitter:description" content="A reflection on the intersection of traditional Japanese color harmony and minimalist web implementation.">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script src="../../assets/js/site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../../index.html">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span class="brand-name">Feureau</span>
+      </a>
+      <input class="nav-cb" type="checkbox" id="nav-toggle" aria-label="Show navigation menu" aria-controls="site-nav">
+      <label class="nav-burger" for="nav-toggle" aria-hidden="true"><span></span><span></span><span></span></label>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../index.html" aria-current="page">Blog</a></li>
+          <li><a href="../../projects/index.html">Projects</a></li>
+          <li><a href="../../demos/index.html">Demos</a></li>
+          <li><a href="../../links/index.html">Links</a></li>
+          <li><a href="../../about/index.html">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <article class="section">
+      <div class="wrap">
+        <div class="prose-wrap">
+          <a class="back-link" href="../index.html">All posts</a>
+
+          <header class="article-head">
+            <h1>Exploring Traditional Color: The Sanzo Wada Swatch Viewer</h1>
+            <p class="post-meta">
+              <time datetime="2026-10-01">01 October 2026</time>
+              <span aria-hidden="true">&middot;</span>
+              <span>5 min read</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>web, design</span>
+            </p>
+          </header>
+
+          <div class="prose">
+            <p>
+              Color is rarely about a single hue; it is about the relationship between colors. This realization is at the heart of the work of Sanzo Wada, a pioneer of color harmony who bridged the gap between traditional Japanese aesthetics and modern design in the early 20th century.
+            </p>
+            
+            <p>
+              Wada&rsquo;s approach was not merely about identifying &ldquo;pretty&rdquo; colors, but about understanding the <em>interplay</em>&mdash;how one shade elevates another, and how a palette can evoke a specific mood, season, or emotion. In translating this physical, pigment-based tradition into a digital tool, I found myself grappling with a fundamental friction: the translation of organic, historical colors into the rigid, mathematical world of sRGB and Hex codes.
+            </p>
+
+            <h2>The Interface as a Frame</h2>
+            <p>
+              When building the <a href="https://feureau.github.io/sanzo-wada-swatch-viewer/">Sanzo Wada Swatch Viewer</a>, my primary goal was to ensure that the software did not compete with the art. In a world of loud interfaces and flashing notifications, I wanted to create a &ldquo;silent gallery.&rdquo;
+            </p>
+            <p>
+              This led me to a choice of intentional simplicity. The interface is stripped of everything but the essentials. There are no complex menus, no loading spinners, and no distracting animations. The UI is designed to be a frame&mdash;an invisible support structure that allows the color harmonies to be the sole focus of the user&rsquo;s attention.
+            </p>
+
+            <h2>A Manifesto of Longevity</h2>
+            <p>
+              Technically, the viewer is a reflection of the philosophy I apply to my entire site: it is built with hand-written HTML, CSS, and vanilla JavaScript, with no build step and no external frameworks.
+            </p>
+            <p>
+              In the modern web ecosystem, there is a constant churn of dependencies. Frameworks that are industry standards today are often legacy code within five years. By eschewing this cycle, the Swatch Viewer is built for longevity. It doesn&rsquo;t rely on a specific version of a library or a complex build pipeline; it relies on the browser. As long as the web exists, this tool will work exactly as it does today.
+            </p>
+
+            <h2>The Journey of Curation</h2>
+            <p>
+              The act of building this tool was, in itself, a study of Wada&rsquo;s work. Organizing the palettes, refining the spacing, and testing the contrast was an iterative process of discovery. There was a specific &ldquo;click&rdquo; moment&mdash;a point in the development where the digital stiffness vanished, and the layout finally felt as balanced as the palettes it was designed to showcase.
+            </p>
+            <p>
+              It was a reminder that the most satisfying part of coding isn&rsquo;t always solving a complex algorithmic problem, but rather the pursuit of a specific, felt quality in the final product.
+            </p>
+
+            <p>
+              The result is a space for quiet exploration. I invite you to browse the palettes and perhaps find a combination that sparks something in your own creative work.
+            </p>
+
+            <h2>The Tools at Your Fingertips</h2>
+            <p>
+              Beyond browsing, the viewer includes a few features that respect both the data and the workflow:
+            </p>
+            
+            <h3>Palette Builder</h3>
+            <p>
+              You can collect colors into a persistent tray&mdash;your selections survive page reloads via localStorage. Then, use it to find combinations that match your selection, creating custom palettes from the Wada dataset itself.
+            </p>
+            
+            <h3>Live Search</h3>
+            <p>
+              Filter swatches and combinations by color name or hex value&mdash;no dropdowns to navigate, just type and see what comes up.
+            </p>
+
+            <h3>Shareable URLs</h3>
+            <p>
+              Every state is reflected in the URL hash. Share a specific color view, combination detail, or builder progress as a bookmarkable link&mdash;no authentication required.
+            </p>
+
+            <h2>Digital Preservation of Analog Craft</h2>
+            <p>
+              The dataset itself is part of the story here. Wada's original work was published in 1933–34 as physical swatch plates with handwritten names and hex values that were later standardized.
+            </p>
+            <p>
+              This project digitizes that heritage into a single JSON structure: two top-level arrays&mdash;<code>colors</code> (159 entries) and <code>combos</code> (348 combinations). Each color carries its full CMYK conversion alongside hex values, ensuring both precision and accessibility.
+            </p>
+            <p>
+              The structure is intentionally simple: every combination lists its colors in order, with matching hex values that can be copied to your clipboard with a single click. There's no database query, no backend&mdash;just markup, JSON, and the browser rendering it faithfully.
+            </p>
+
+            <h2>What Comes Next</h2>
+            <p>
+              Future work is already in motion: exporting palettes as CSS variables for easy integration into your own designs, generating PNG/SVG previews for quick visual reference, and keyboard navigation to make grid traversal accessible without a mouse.
+            </p>
+          </div>
+
+          <nav class="post-nav" aria-label="More posts">
+            <a href="../../projects/index.html">Projects &rarr;</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>&copy; <span data-year>2026</span> Feureau. Built with hand-written HTML, CSS and no build step.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/feureau">GitHub</a></li>
+        <li><a href="../../about/index.html">About</a></li>
+        <li><a href="../index.html">Blog</a></li>
+        <li><a href="../../sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
